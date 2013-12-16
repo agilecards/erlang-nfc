@@ -1,0 +1,7 @@
+%% ex: ft=erlang
+{application, 'erlang-nfc',
+    [{description,"Erlang driver for nfc communication"},
+     {vsn,"1.0"},
+     {registered,[]},
+     {applications,[kernel,stdlib]},
+     {modules,[erlang-nfc]}]}.
