@@ -3,6 +3,7 @@
 #include "erl_nfc.h"
 #include <iostream>
 #include <stdio.h>
+#include "erl_comm.h"
 
 LibnfcManager::LibnfcManager()
 {
@@ -64,7 +65,7 @@ int LibnfcManager::init_libnfc(int arg)
 
 }
 
-int LibnfcManager::start_polling()
+int LibnfcManager::start_polling(ErlangCommsManager *cm)
 {
   int res;
 
@@ -78,6 +79,9 @@ int LibnfcManager::start_polling()
   if( res > 0 ){
     //    print_nfc_target(&nt, verbose);
   fprintf(stderr,"LibnfcManager: Target found \r\n");
+  // serialise card details
+  // return card details 
+  cm->write_cmd(nt.nti.nai.abtUid,10);
   } else {
   fprintf(stderr,"LibnfcManager: No target found \r\n");
   }
@@ -90,3 +94,18 @@ int LibnfcManager::stop_polling()
 
   return 1;
 }
+
+
+
+/*
+notes:
+
+have realised that the polling method above will poll for a certain amount of time
+and return as soon as it sees a card or when the time is up.
+
+Best way to use this seems to be for eht erlang process to request a poll and process the result.
+
+It immediately fires of another poll and then forwards the card details if there was one found.
+
+*/
+

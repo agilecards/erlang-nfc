@@ -38,7 +38,7 @@ int main()
         res = nfcMgr.init_libnfc(arg);
 	break;
       case 7:
-	res = nfcMgr.start_polling();
+	res = nfcMgr.start_polling(&commMgr);
 	break;
       }
 
