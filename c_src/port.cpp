@@ -1,4 +1,4 @@
-// port.c
+// port.cpp
 
 /*
 this works for request/response type of API, but won't work for async data coming from
@@ -9,6 +9,8 @@ from erlang AND data coming from card reader which needs to be sent asynchronous
 onnected process
 */
 #include <stdio.h>
+#include "erl_comm.h"
+#include "erl_nfc.h"
 
 
 typedef unsigned char byte;
@@ -17,23 +19,26 @@ int main()
 {
   int fn, arg, res;
   byte buf[100];
+  LibnfcManager nfcMgr;
+  ErlangCommsManager commMgr;
 
-  fprintf(stderr,"Started C port driver \n");
+  fprintf(stderr,"Started CPP port driver \n");
 
-  while(read_cmd(buf) > 0)
+
+  while(commMgr.read_cmd(buf) > 0)
     {
       fn = buf[0];
       arg = buf[1];
 
-      fprintf(stderr,"port driver: received command %u with arg %u \r\n",fn, arg);
+      fprintf(stderr,"cpp port driver: received command %u with arg %u \r\n",fn, arg);
 
       // interpret commands from erlang
       if (fn == 1) {
-        res = init_libnfc(arg);
+        res = nfcMgr.init_libnfc(arg);
       };
 
       buf[0] = res;
-      write_cmd(buf,1);
+      commMgr.write_cmd(buf,1);
     }
   return 1;
 }
