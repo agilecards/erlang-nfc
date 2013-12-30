@@ -10,6 +10,7 @@
 -define(CLOSE_DEVICE,4).
 -define(IDLE_DEVICE,5).
 -define(INITIATOR_INIT,6).
--define(INITIATOR_POLL,7).
+-define(INITIATOR_START_POLL,7).
+-define(INITIATOR_STOP_POLL,8).
 
 -endif.

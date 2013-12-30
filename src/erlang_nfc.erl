@@ -1,6 +1,6 @@
 -module(erlang_nfc).
 
--export([start/1, init/1, loop/1, init_nfc/0]). 
+-export([start/1, init/1, loop/1, init_nfc/0, start_polling/0]). 
 
 -include("erlang_nfc.hrl").
 
@@ -30,7 +30,10 @@ loop(Port) ->
     end.
 
 encode({init, X}) ->
-    [1,X].
+    [1,X];
+encode({startpolling,X}) ->
+    [7,X].
+
 
 decode([Int]) ->
     Int.
@@ -43,6 +46,9 @@ start(ExtPrg) ->
 
 init_nfc() ->
     call_port({init,[]}).
+
+start_polling() ->
+    call_port({startpolling,[]}).
 
 call_port(Msg) ->
     nfc ! {call, self(), Msg},

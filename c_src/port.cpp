@@ -33,9 +33,14 @@ int main()
       fprintf(stderr,"cpp port driver: received command %u with arg %u \r\n",fn, arg);
 
       // interpret commands from erlang
-      if (fn == 1) {
+      switch (fn) {
+      case 1:
         res = nfcMgr.init_libnfc(arg);
-      };
+	break;
+      case 7:
+	res = nfcMgr.start_polling();
+	break;
+      }
 
       buf[0] = res;
       commMgr.write_cmd(buf,1);
