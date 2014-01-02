@@ -12,7 +12,7 @@ class LibnfcManager
     LibnfcManager();
     ~LibnfcManager();
 
-    int init_libnfc(int arg);
+    int init_libnfc(char* arg);
     int start_polling(uint8_t* buf, int* len);
     int stop_polling(); 
 

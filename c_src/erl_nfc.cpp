@@ -33,7 +33,7 @@ LibnfcManager::~LibnfcManager()
 
 }
 
-int LibnfcManager::init_libnfc(int arg)
+int LibnfcManager::init_libnfc(char* arg)
 {
   fprintf(stderr,"nfc: entered init_libnfc \r\n");
   
@@ -45,7 +45,7 @@ int LibnfcManager::init_libnfc(int arg)
   }
   fprintf(stderr,"LibnfcManager: Successfully initialised libnfc \r\n");
 
-  pnd = nfc_open(context, NULL);
+  pnd = nfc_open(context, arg);
 
   if(pnd == NULL){
     fprintf(stderr,"LibnfcManager: Unable to open nfc device\r\n");

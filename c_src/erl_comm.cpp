@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "erl_comm.h"
+#include "defs.h"
 
 int  ErlangCommsManager::read_exact(byte *buf, int len)
 {
@@ -41,18 +42,40 @@ int  ErlangCommsManager::read_cmd(byte *buf)
   return read_exact(buf, len);
 }
 
-int  ErlangCommsManager::write_cmd(byte *buf, int len)
+int  ErlangCommsManager::write_cmd(int packetType, byte *buf, int len)
 {
   byte li;
+  byte type;
 
   fprintf(stderr,"entered write_cmd \r\n");
 
-  li = (len >> 8) & 0xff;
+  /*
+ protocol is: 
+ 2 bytes   - # bytes in message
+ 1 byte    - message type (1:data/2:response)
+ len bytes - message bytes
+
+ need to add 1 to len to account for message type byte
+ then output message length before message type and message
+  */
+  int totalLen = len + 1;
+
+  li = (totalLen >> 8) & 0xff;
   write_exact(&li, 1);
 
-  li = len & 0xff;
+  li = totalLen & 0xff;
   write_exact(&li, 1);
-
+  
+  switch (packetType){
+  case DATA:
+    type = 0x01;
+    write_exact(&type,1);
+    break;
+  case RESPONSE:
+    type = 0x02;
+    write_exact(&type,1);
+    break;
+  }
   return write_exact(buf, len);
 }
 
