@@ -3,14 +3,16 @@
 #include "erl_nfc.h"
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 #include "erl_comm.h"
 
 LibnfcManager::LibnfcManager()
 {
-  cardTypes = new nfc_modulation[5];
+  cardTypes = new nfc_modulation[1];
 
   cardTypes[0].nmt =  NMT_ISO14443A;
   cardTypes[0].nbr =  NBR_106;
+  /*
   cardTypes[1].nmt =  NMT_ISO14443B;
   cardTypes[1].nbr =  NBR_106;
   cardTypes[2].nmt =  NMT_FELICA;
@@ -19,7 +21,7 @@ LibnfcManager::LibnfcManager()
   cardTypes[3].nbr =  NBR_424;
   cardTypes[4].nmt =  NMT_JEWEL;
   cardTypes[4].nbr =  NBR_106;
-
+  */
 }
    
 LibnfcManager::~LibnfcManager()
@@ -65,28 +67,32 @@ int LibnfcManager::init_libnfc(int arg)
 
 }
 
-int LibnfcManager::start_polling(ErlangCommsManager *cm)
+int LibnfcManager::start_polling(byte* buf, int* len)
 {
   int res;
 
   if( (res = nfc_initiator_poll_target(pnd, cardTypes, szModulations, uiPollNr, uiPeriod, &nt)) < 0)
   {
-    nfc_perror(pnd, "nfc_initiator_poll_target");
-    nfc_close(pnd);
-    nfc_exit(context);
-    return 0;
+    nfc_perror(pnd,"nfc_initiator_poll_target");  
+    fprintf(stderr,"LibnfcManager: Error polling target \r\n");
+    // nfc_close(pnd);
+    // nfc_exit(context);
+    return res;
   };
   if( res > 0 ){
-    //    print_nfc_target(&nt, verbose);
+    // print_nfc_target(&nt, verbose);
   fprintf(stderr,"LibnfcManager: Target found \r\n");
   // serialise card details
   // return card details 
-  cm->write_cmd(nt.nti.nai.abtUid,10);
+  // cm->write_cmd(nt.nti.nai.abtUid,10);
+  *len = 4; 
+  memcpy(buf, nt.nti.nai.abtUid, *len);
+
   } else {
   fprintf(stderr,"LibnfcManager: No target found \r\n");
   }
   
-  return 1;
+  return res;
 }
 
 int LibnfcManager::stop_polling()

@@ -17,7 +17,7 @@ typedef unsigned char byte;
 
 int main()
 {
-  int fn, arg, res;
+  int fn, arg, res, len;
   byte buf[100];
   LibnfcManager nfcMgr;
   ErlangCommsManager commMgr;
@@ -36,14 +36,15 @@ int main()
       switch (fn) {
       case 1:
         res = nfcMgr.init_libnfc(arg);
+	buf[0] = res;
+        len = 1;
 	break;
       case 7:
-	res = nfcMgr.start_polling(&commMgr);
+	res = nfcMgr.start_polling(buf,&len);
 	break;
       }
 
-      buf[0] = res;
-      commMgr.write_cmd(buf,1);
+      commMgr.write_cmd(buf,len);
     }
   return 1;
 }

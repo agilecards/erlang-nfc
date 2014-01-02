@@ -16,7 +16,7 @@ loop(Port) ->
 	    port_command(Port, encode(Msg)),
 	    receive
 		{Port, {data, Data}} ->
-		    Caller ! {nfc, decode(Data)}
+		    Caller ! {nfc, Data}
 	    end,
 	    loop(Port);
 	stop ->
@@ -35,7 +35,7 @@ encode({startpolling,X}) ->
     [7,X].
 
 
-decode([Int]) ->
+decode(Int) ->
     Int.
 
 
@@ -48,7 +48,12 @@ init_nfc() ->
     call_port({init,[]}).
 
 start_polling() ->
-    call_port({startpolling,[]}).
+   poll().
+
+poll() ->
+    call_port({startpolling,[]}),
+    poll().
+    
 
 call_port(Msg) ->
     nfc ! {call, self(), Msg},
