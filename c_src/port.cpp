@@ -19,7 +19,8 @@ typedef unsigned char byte;
 int main(int argc, char *argv[])
 {
   int fn, res, len;
-  char* arg;
+  byte arg;
+  char* arg1;
   byte buf[100];
   LibnfcManager nfcMgr;
   ErlangCommsManager commMgr;
@@ -30,20 +31,21 @@ int main(int argc, char *argv[])
   while(commMgr.read_cmd(buf) > 0)
     {
       fn = buf[0];
-      arg = (char*)&buf[1];
+      arg = buf[1];
+      arg1 = (char*)&buf[1];
 
       fprintf(stderr,"cpp port driver: received command %u with arg %u \r\n",fn, arg);
 
       // interpret commands from erlang
       switch (fn) {
       case INIT:
-        res = nfcMgr.init_libnfc(arg);
+        res = nfcMgr.init_libnfc(arg1);
 	buf[0] = res;
         len = 1;
 	commMgr.write_cmd(RESPONSE,buf,len);
 	break;
       case POLL:
-	res = nfcMgr.start_polling(buf,&len);
+	res = nfcMgr.start_polling(buf, &len, arg);
 	commMgr.write_cmd(DATA,buf,len);
 	break;
       }

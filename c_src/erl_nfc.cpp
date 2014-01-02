@@ -8,6 +8,8 @@
 
 LibnfcManager::LibnfcManager()
 {
+  
+  uiPollNr = 10;
   cardTypes = new nfc_modulation[1];
 
   cardTypes[0].nmt =  NMT_ISO14443A;
@@ -36,6 +38,7 @@ LibnfcManager::~LibnfcManager()
 int LibnfcManager::init_libnfc(char* arg)
 {
   fprintf(stderr,"nfc: entered init_libnfc \r\n");
+
   
   nfc_init(&context);
 
@@ -48,7 +51,7 @@ int LibnfcManager::init_libnfc(char* arg)
   pnd = nfc_open(context, arg);
 
   if(pnd == NULL){
-    fprintf(stderr,"LibnfcManager: Unable to open nfc device\r\n");
+    fprintf(stderr,"LibnfcManager: Unable to open nfc device: %s \r\n", arg );
     nfc_exit(context);
     return 0;
   }
@@ -67,9 +70,11 @@ int LibnfcManager::init_libnfc(char* arg)
 
 }
 
-int LibnfcManager::start_polling(byte* buf, int* len)
+int LibnfcManager::start_polling(byte* buf, int* len, byte numPolls)
 {
   int res;
+  if (numPolls!=0)
+    uiPollNr = numPolls;
 
   if( (res = nfc_initiator_poll_target(pnd, cardTypes, szModulations, uiPollNr, uiPeriod, &nt)) < 0)
   {

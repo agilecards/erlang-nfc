@@ -13,7 +13,7 @@ class LibnfcManager
     ~LibnfcManager();
 
     int init_libnfc(char* arg);
-    int start_polling(uint8_t* buf, int* len);
+    int start_polling(uint8_t* buf, int* len, uint8_t numPolls);
     int stop_polling(); 
 
  private:
@@ -23,7 +23,7 @@ class LibnfcManager
     nfc_target nt;
     nfc_modulation* cardTypes;
 
-    static const uint8_t uiPollNr = 10;
+    uint8_t uiPollNr;
     static const uint8_t uiPeriod = 2;
     static const size_t szModulations = 1;
 
