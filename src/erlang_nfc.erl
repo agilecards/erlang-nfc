@@ -20,14 +20,19 @@ loop(Pid,Port) ->
 
     receive
         {Port, {data, Bytes}} ->
-            Pid ! {data, Bytes},
+            [PacketType| Message] = Bytes,
+            handle_data({PacketType, Message}),
             port_command(Port, encode({poll,0})),
             loop(Pid,Port);
 
-        {Port, {response, Response}} ->
+        {response, Response} ->
             handle_response({command, Response}),
             loop(Pid,Port);
-        
+
+        {data, Bytes} ->
+            Pid ! {data, Bytes},
+            loop(Pid, Port);
+
 	{init, ConnString} ->
 	    port_command(Port, encode({init, ConnString})),
 	        receive
@@ -49,6 +54,11 @@ encode({init, X}) ->
     [1,X];
 encode({poll,X}) ->
     [2,X].
+
+handle_data({1,Message}) ->
+    self() ! {data, Message};
+handle_data({2,Message}) ->
+    self() ! {response, Message}.
 
 handle_response({init, Response}) ->
     done;
