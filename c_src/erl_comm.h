@@ -9,6 +9,7 @@ class ErlangCommsManager
 
   int read_cmd(byte *buf);
   int write_cmd(int packetType, byte *buf, int len);
+  bool stay_alive();
 
  private:
 

@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   fprintf(stderr,"Started CPP port driver \n");
 
 
-  while(commMgr.read_cmd(buf) > 0)
+  while(commMgr.stay_alive() && commMgr.read_cmd(buf) > 0)
     {
       fn = buf[0];
       arg = buf[1];

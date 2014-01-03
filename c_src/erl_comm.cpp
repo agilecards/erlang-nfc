@@ -1,6 +1,7 @@
 // erl_comm.cpp
 
 #include <stdio.h>
+#include <sys/select.h>
 #include <unistd.h>
 #include "erl_comm.h"
 #include "defs.h"
@@ -79,4 +80,15 @@ int  ErlangCommsManager::write_cmd(int packetType, byte *buf, int len)
   return write_exact(buf, len);
 }
 
+bool ErlangCommsManager::stay_alive()
+{
+  fd_set fdset;
+  struct timeval timeout;
+  
+  FD_ZERO(&fdset);
+  FD_SET(0, &fdset);
+  timeout.tv_sec = 0;
+  timeout.tv_usec = 1;
 
+  return select(1, &fdset, NULL, NULL, &timeout) == 1 ? true : false;
+}
