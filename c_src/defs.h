@@ -3,3 +3,4 @@
 
 #define INIT 1
 #define POLL 2
+#define EXIT 3

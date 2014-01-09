@@ -76,26 +76,31 @@ int LibnfcManager::start_polling(byte* buf, int* len, byte numPolls)
   if (numPolls!=0)
     uiPollNr = numPolls;
 
-  if( (res = nfc_initiator_poll_target(pnd, cardTypes, szModulations, uiPollNr, uiPeriod, &nt)) < 0)
+  if( (res = nfc_initiator_poll_target(pnd, cardTypes, szModulations, uiPollNr, uiPeriod, &nt)) <= 0)
   {
-    nfc_perror(pnd,"nfc_initiator_poll_target");  
-    fprintf(stderr,"LibnfcManager: Error polling target \r\n");
-    // nfc_close(pnd);
-    // nfc_exit(context);
-    return res;
-  };
-  if( res > 0 ){
-    // print_nfc_target(&nt, verbose);
-  fprintf(stderr,"LibnfcManager: Target found \r\n");
+    // TODO: handle all non positive response codes here
+    // res = 0, no card, no error
+    // res < 0, error condition
+
+
+    fprintf(stderr,"LibnfcManager: No card found \r\n");
+
+    *len = 0;
+
+  } else
+  {
+    fprintf(stderr,"LibnfcManager: Target found \r\n");
   // serialise card details
   // return card details 
   // cm->write_cmd(nt.nti.nai.abtUid,10);
-  *len = 4; 
-  memcpy(buf, nt.nti.nai.abtUid, *len);
+  // note that the length og the UID depends on the type of card
+  // TODO: check card type and size the response accordingly
 
-  } else {
-  fprintf(stderr,"LibnfcManager: No target found \r\n");
-  }
+    *len = 4; //Mifare classic
+
+    memcpy(buf, nt.nti.nai.abtUid, *len);
+
+  };
   
   return res;
 }

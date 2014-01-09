@@ -1,6 +1,6 @@
 -module(erlang_nfc).
 
--export([start/0, start/1, init/1, loop/2, start_polling/2, stop_polling/1]). 
+-export([start/0, stop/1, start/1, init/1, loop/2, start_polling/2, stop_polling/1]). 
 
 -include("erlang_nfc.hrl").
 
@@ -46,14 +46,20 @@ loop(Pid,Port) ->
 	    loop(Pid,Port);
 
 	{stoppolling} ->
-            done
-	    
+	    port_close(Port), 
+            done;
+
+	{stopport} ->
+	    port_command(Port, encode({exit,[]})),
+	    loop(Pid, Port)
     end.
 
 encode({init, X}) ->
     [1,X];
 encode({poll,X}) ->
-    [2,X].
+    [2,X];
+encode({exit,X}) ->
+    [3,X].
 
 handle_data({1,Message}) ->
     self() ! {data, Message};
@@ -86,4 +92,10 @@ start_polling(Pid, Numpolls) ->
     done.
 
 stop_polling(Pid) ->
-    Pid ! {stoppolling}.
+    Pid ! {stoppolling},
+    done.
+
+stop(Pid) ->
+    Pid ! {stopport},
+    done.
+

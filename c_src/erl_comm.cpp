@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include "erl_comm.h"
 #include "defs.h"
+//#include <boost/log/trivial.hpp>
 
 int  ErlangCommsManager::read_exact(byte *buf, int len)
 {
@@ -13,6 +14,7 @@ int  ErlangCommsManager::read_exact(byte *buf, int len)
   do {
     if ((i = read(0, buf+got, len-got)) <= 0)
       return(i);
+    fprintf(stderr,"ErlangCommMgr::read_exact read result = %i \r\n", i);
     got += i;
   } while (got<len);
 
@@ -22,6 +24,8 @@ int  ErlangCommsManager::read_exact(byte *buf, int len)
 int  ErlangCommsManager::write_exact(byte *buf, int len)
 {
   int i, wrote = 0;
+
+  if (len == 0) return len;
 
   do {
     if ((i = write(1, buf+wrote, len-wrote)) <= 0)
@@ -90,5 +94,8 @@ bool ErlangCommsManager::stay_alive()
   timeout.tv_sec = 0;
   timeout.tv_usec = 1;
 
-  return select(1, &fdset, NULL, NULL, &timeout) == 1 ? true : false;
+  
+  int res = select(1, &fdset, NULL, NULL, &timeout);
+  fprintf(stderr,"ErlangCommsMgr::stay_alive res = %i \r\n", res);
+  return (res == 1) ? true : false;
 }
