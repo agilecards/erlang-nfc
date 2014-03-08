@@ -4,16 +4,17 @@ CC = g++
 CFLAGS = -c
 LDFLAGS =
 TARGET = nfc
-INCLUDES = /usr/local/include/nfc
-LIBS = /usr/local/lib
+INCLUDES = -I/usr/local/include/nfc -I/usr/local/include
+LIBDIRS = -L/usr/local/lib
+LIBS = -lnfc -lglog
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) -L$(LIBS) $(OBJS) -o $@ -lnfc
+	$(CC) $(LDFLAGS) $(LIBDIRS) $(OBJS) -o $@ $(LIBS)
 
 .cpp.o:
-	$(CC) $(CFLAGS) -I$(INCLUDES) -o $@ $<
+	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $<
 
 clean:
 	rm -rf *o $(TARGET)

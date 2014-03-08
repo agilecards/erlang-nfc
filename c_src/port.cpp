@@ -12,6 +12,7 @@ onnected process
 #include "erl_comm.h"
 #include "erl_nfc.h"
 #include "defs.h"
+#include <glog/logging.h>
 
 
 typedef unsigned char byte;
@@ -25,6 +26,10 @@ int main(int argc, char *argv[])
   byte buf[100];
   LibnfcManager *nfcMgr;
   ErlangCommsManager commMgr;
+
+  google::InitGoogleLogging("logfile");
+
+  LOG(INFO) << "Started CPP Port Driver";
 
   fprintf(stderr,"Started CPP port driver \n");
 

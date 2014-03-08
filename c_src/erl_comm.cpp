@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include "erl_comm.h"
 #include "defs.h"
-//#include <boost/log/trivial.hpp>
+#include <glog/logging.h>
 
 int  ErlangCommsManager::read_exact(byte *buf, int len)
 {
@@ -15,6 +15,7 @@ int  ErlangCommsManager::read_exact(byte *buf, int len)
     if ((i = read(0, buf+got, len-got)) <= 0)
       return(i);
     fprintf(stderr,"ErlangCommMgr::read_exact read result = %i \r\n", i);
+    LOG(INFO) << "ErlangCommMgr::read_exact read result = " << i << "\r\n";
     got += i;
   } while (got<len);
 
