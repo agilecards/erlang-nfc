@@ -7,7 +7,7 @@
 init(Pid) ->
 						% register(nfc, self()),
     process_flag(trap_exit,true),
-    Port = open_port({spawn, './nfc'}, [use_stdio,{packet,2}]),
+    Port = open_port({spawn, './priv/nfc'}, [use_stdio,{packet,2}]),
     loop(Pid,Port).
 
 loop(Pid,Port) ->
