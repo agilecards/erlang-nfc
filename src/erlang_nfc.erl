@@ -5,9 +5,16 @@
 -include("erlang_nfc.hrl").
 
 init(Pid) ->
-						% register(nfc, self()),
+    PrivDir = case code:priv_dir(?MODULE) of
+		  {error, _} ->
+		      EbinDir = filename:dirname(code:which(?MODULE)),
+		      AppPath = filename:dirname(EbinDir),
+		      filename:join(AppPath, "priv");
+		  Path ->
+		      Path
+    end,
     process_flag(trap_exit,true),
-    Port = open_port({spawn, './priv/nfc'}, [use_stdio,{packet,2}]),
+    Port = open_port({spawn, filename:join(PrivDir,"nfc")}, [use_stdio,{packet,2}]),
     loop(Pid,Port).
 
 loop(Pid,Port) ->
